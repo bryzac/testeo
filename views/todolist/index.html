@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>ToDo List</title>
+</head>
+<body>
+    <nav id="navbar" class="fixed top-0 right-0 left-0 bg-slate-700 h-16">
+    </nav>
+
+    <div id="notification" class="fixed top-20 right-0 left-0"></div>
+
+    <div id="todolist" class="flex flex-col items-center justify-center h-screen p-4 bg-slate-800">
+        
+        <div class="h-3/4 items-stretch bg-slate-700 w-full p-4 text-center rounded-lg shadow-md text-white lg:w-10/12">
+            <h1 class="font-bold text-3xl">Tareas</h1>
+
+            <form id="form" autocomplete="off" class="flex items-center justify-center gap-4 pt-4">
+                <input type="text" id="task_input" class="px-3 py-1 rounded-lg bg-slate-600 outline-white border-white border-2 border-opacity-50">
+                <button id="create_btn" disabled class="bg-green-600 p-2 rounded-xl disabled:opacity-50 hover:bg-green-500 hover:scale-110 transition ease-in-out">
+                    <img src="/images/add.svg" class="w-6 h-6" alt="creación de tarea">
+                </button>
+            </form>
+            
+            <form id="form_list" class="h-2/3 overflow-auto my-8 bg-zinc-300 bg-opacity-5 text-start rounded-lg">
+                <ul id="list" class="flex flex-col gap-2 px-3">
+                </ul>
+            </form>
+
+            <div id="counts" class="flex flex-row justify-between p-2">
+                <p class="text-white font-semibold">Total: <span id="total"></span></p>
+                <p class="text-green-600 font-semibold">Completadas: <span id="total_complete"></span></p>
+                <p class="text-slate-300 font-semibold">Incompletas: <span id="total_incomplete"></span></p>
+            </div>
+
+        </div>
+        
+    </div>
+
+    
+    <script src="/components/nav.js"></script>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
