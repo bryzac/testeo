@@ -26,7 +26,6 @@ todolistRouter.post('/', async (request, response) => {
         user: user._id
     });
     const savedTodo = await newTodo.save();
-    console.log(user.todolist);
     user.todolist = user.todolist.concat(savedTodo._id);
     await user.save();
 
@@ -48,8 +47,10 @@ todolistRouter.patch('/:id', async (request, response) => {
     const user = request.user;
 
     const { checked } = request.body;
+    const { text } = request.body;
 
     await Todolist.findByIdAndUpdate(request.params.id, { checked });
+    await Todolist.findByIdAndUpdate(request.params.id, { text });
 
     return response.sendStatus(200);
 });

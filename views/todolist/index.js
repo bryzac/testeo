@@ -9,52 +9,10 @@ const total = document.querySelector('#total');
 const completed = document.querySelector('#total_complete');
 const incompleted = document.querySelector('#total_incomplete');
 
-(async () => {
-    try {
-        const { data } = await axios.get('/api/todolists', {
-            withCredentials: true
-        });
-
-        data.forEach(todo => {
-            const newTask = document.createElement('li');
-            newTask.id = todo.id;
-            newTask.classList.add('flex', 'flex-row', 'bg-slate-600', 'px-1', 'py-1', 'rounded-md', 'border-zinc-400', 'border-2', 'gap-2', 'justify-around');
-            newTask.innerHTML = `
-                <p class="flex items-center w-9/12 bg-slate-500 px-3 rounded-md text-lg font-medium md:w-10/12">${todo.text}</p>
-                <button class="bg-green-600 rounded-lg disabled:opacity-50 hover:bg-green-500 hover:scale-110 transition ease-in-out">
-                    <img src="/images/solved.svg" class="w-6 h-6 m-1" alt="tarea completada">
-                </button>
-                <button class="bg-red-600 rounded-lg disabled:opacity-50 hover:bg-red-500 hover:scale-110 transition ease-in-out">
-                    <img src="/images/trash.svg" class="w-6 h-6 m-1" alt="eliminar tarea">
-                </button>
-                <button class="bg-yellow-600 rounded-lg disabled:opacity-50 hover:bg-yellow-500 hover:scale-110 transition ease-in-out">
-                    <img src="/images/edit.svg" class="w-6 h-6 m-1" alt="editar tarea">
-                </button>
-            `;
-            if (todo.checked) {
-                newTask.children[0].classList.add('line-through');
-                newTask.classList.add('opacity-50');
-                newTask.children[3].classList.add('invisible');
-                newTask.classList.add('done');
-            } else {
-                newTask.children[0].classList.remove('line-through');
-                newTask.classList.remove('opacity-50');
-                newTask.children[3].classList.remove('invisible');
-                newTask.classList.remove('done');
-            }
-            ul.append(newTask)
-        })
-    } catch (error) {
-        window.location.pathname = '/login'
-    }
-})();
-
-
 
 let textNotification = '';
 let isNotificationTrue = '';
 const message =(bool, text) => {
-    console.log(bool);
     createNotification(bool, text);
         setTimeout(() => {
             notification.innerHTML = '';
@@ -107,11 +65,11 @@ form.addEventListener('submit', async e => {
 
     const { data } = await axios.post('/api/todolists', { text: input.value });
 
-
     const newTask = document.createElement('li');
+    newTask.id = data.id;
     newTask.classList.add('flex', 'flex-row', 'bg-slate-600', 'px-1', 'py-1', 'rounded-md', 'border-zinc-400', 'border-2', 'gap-2', 'justify-around');
     newTask.innerHTML = `
-        <p class="flex items-center w-9/12 bg-slate-500 px-3 rounded-md text-lg font-medium md:w-10/12">${input.value}</p>
+        <p class="flex items-center w-9/12 bg-slate-500 px-3 rounded-md text-lg font-medium md:w-10/12">${data.text}</p>
         <button class="bg-green-600 rounded-lg disabled:opacity-50 hover:bg-green-500 hover:scale-110 transition ease-in-out">
             <img src="/images/solved.svg" class="w-6 h-6 m-1" alt="tarea completada">
         </button>
@@ -136,7 +94,7 @@ form.addEventListener('submit', async e => {
 
 
 // 
-formList.addEventListener('submit', e =>{
+formList.addEventListener('submit', async e =>{
     e.preventDefault();
 
     // window.addEventListener("keypress", event => {
@@ -148,13 +106,15 @@ formList.addEventListener('submit', e =>{
     // Check
     if (e.submitter.children[0].alt === 'tarea completada') {
         const checkIcon = e.submitter.children[0];
-        const listItem = checkIcon.parentElement;
+        const listItem = checkIcon.parentElement.parentElement;
         if (!e.submitter.parentElement.children[0].classList.contains('line-through')) {
+            await axios.patch(`/api/todolists/${listItem.id}`, { checked: true });
             e.submitter.parentElement.children[0].classList.add('line-through');
             e.submitter.parentElement.classList.add('opacity-50');
             e.submitter.parentElement.children[3].classList.add('invisible');
             e.submitter.parentElement.classList.add('done');
         } else {
+            await axios.patch(`/api/todolists/${listItem.id}`, { checked: false });
             e.submitter.parentElement.children[0].classList.remove('line-through');
             e.submitter.parentElement.classList.remove('opacity-50');
             e.submitter.parentElement.children[3].classList.remove('invisible');
@@ -165,7 +125,9 @@ formList.addEventListener('submit', e =>{
     
     // Delete
     if (e.submitter.children[0].alt === 'eliminar tarea') {
-        e.submitter.parentElement.remove();
+        const li = e.submitter.parentElement;
+        await axios.delete(`/api/todolists/${li.id}`)
+        li.remove()
         todoCount();
 
         textNotification = 'Tarea eliminada';
@@ -199,6 +161,7 @@ formList.addEventListener('submit', e =>{
             message(isNotificationTrue, textNotification);
             return
         };
+        await axios.patch(`/api/todolists/${editable.id}`, { text: text })
         editable.innerHTML = `
             <p class="flex items-center w-9/12 bg-slate-500 px-3 rounded-md text-lg font-medium md:w-10/12">${text}</p>
             <button class="bg-green-600 rounded-lg disabled:opacity-50 hover:bg-green-500 hover:scale-110 transition ease-in-out">
@@ -236,3 +199,45 @@ formList.addEventListener('submit', e =>{
     }
     todoCount();
 });
+
+(async () => {
+    try {
+        const { data } = await axios.get('/api/todolists', {
+            withCredentials: true
+        });
+
+        data.forEach(todo => {
+            const newTask = document.createElement('li');
+            newTask.id = todo.id;
+            newTask.classList.add('flex', 'flex-row', 'bg-slate-600', 'px-1', 'py-1', 'rounded-md', 'border-zinc-400', 'border-2', 'gap-2', 'justify-around');
+            newTask.innerHTML = `
+                <p class="flex items-center w-9/12 bg-slate-500 px-3 rounded-md text-lg font-medium md:w-10/12">${todo.text}</p>
+                <button class="bg-green-600 rounded-lg disabled:opacity-50 hover:bg-green-500 hover:scale-110 transition ease-in-out">
+                    <img src="/images/solved.svg" class="w-6 h-6 m-1" alt="tarea completada">
+                </button>
+                <button class="bg-red-600 rounded-lg disabled:opacity-50 hover:bg-red-500 hover:scale-110 transition ease-in-out">
+                    <img src="/images/trash.svg" class="w-6 h-6 m-1" alt="eliminar tarea">
+                </button>
+                <button class="bg-yellow-600 rounded-lg disabled:opacity-50 hover:bg-yellow-500 hover:scale-110 transition ease-in-out">
+                    <img src="/images/edit.svg" class="w-6 h-6 m-1" alt="editar tarea">
+                </button>
+            `;
+            if (todo.checked) {
+                newTask.children[0].classList.add('line-through');
+                newTask.classList.add('opacity-50');
+                newTask.children[3].classList.add('invisible');
+                newTask.classList.add('done');
+            } else {
+                newTask.children[0].classList.remove('line-through');
+                newTask.classList.remove('opacity-50');
+                newTask.children[3].classList.remove('invisible');
+                newTask.classList.remove('done');
+            }
+            ul.append(newTask)
+            todoCount();
+
+        })
+    } catch (error) {
+        window.location.pathname = '/login'
+    }
+})();

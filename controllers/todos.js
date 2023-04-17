@@ -26,7 +26,7 @@ todosRouter.post('/', async (request, response) => {
         user: user._id
     });
     const savedTodo = await newTodo.save();
-    console.log(user.todos);
+    
     user.todos = user.todos.concat(savedTodo._id);
     await user.save();
 

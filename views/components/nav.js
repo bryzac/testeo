@@ -136,11 +136,8 @@ if (window.location.pathname === '/') {
     createNavSignup();
 } else if (window.location.pathname === '/login/') {
     createNavLogin();
-} else if (window.location.pathname === '/todolist/') {
-    createNavHome();
-} else if (window.location.pathname === '/todos/') {
+} else if (window.location.pathname === '/todos/' || window.location.pathname === '/todolist/') {
     createNavTodos();
-    
 }
 
 const navBtn = navbar.children[0].children[1];

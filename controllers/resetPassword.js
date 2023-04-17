@@ -11,7 +11,6 @@ resetPasswordRouter.post('/', async (request, response) => {
     const user = await User.findOne({ email });
     console.log(email);
     if (!user) {
-        console.log(user);
         return response.status(400).json({ error: 'El usaurio no existe' })
     }
 
@@ -41,6 +40,30 @@ resetPasswordRouter.post('/', async (request, response) => {
         html: `<a href="${PAGE_URL}/resetPassword/${resetToken}">Recuperar contraseña</a>`, // html body
     });
 
+    return response.sendStatus(200);
+});
+
+resetPasswordRouter.get('/:token', async (request, response) => {
+    try {
+        const token = await request.params.token;
+        return response.sendStatus(200);
+    } catch (error) {
+        // await axios.get('/api/logout');
+        // window.location.pathname = '/login';
+        console.log(error);
+        return response.status(404).json({ error: 'Token no encontrado' });
+    }
+});
+
+resetPasswordRouter.patch('/:token', async (request, response) => {
+    const token = await request.params.token;
+    const decodedToken = jwt.verify(token, process.env.ACCES_TOKEN_SECRET);
+    const id = decodedToken.id;
+    const { password } = request.body;
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    await User.findByIdAndUpdate(id, { passwordHash });
     return response.sendStatus(200);
 });
 
