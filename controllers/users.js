@@ -86,7 +86,7 @@ usersRouter.patch('/:id/:token', async (request, response) => {
         from: process.env.EMAIL_USER, // sender address
         to: email, // list of receivers
         subject: 'Verificación de usuario', // Subject line
-        html: `<p style="background-color:rgba(226, 5, 5, 0.541);">Hola, <br></p> <a href="${PAGE_URL}/verify/${id}/${token}">Verificar correo</a>`, // html body
+        html: `<p style="background-color:rgba(226, 5, 5, 0.541);">Hola, <br></p> <a href="${MONGO_URI}/verify/${id}/${token}">Verificar correo</a>`, // html body
     });
     
     return response.status(400).json({ error: 'El link ya expiró. Se ha enviado un nuevo link de verificación a su correo.' });
