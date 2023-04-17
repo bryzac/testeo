@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
     todos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Todo'
+    }],
+    todolist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Todolist'
     }]
 });
 

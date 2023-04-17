@@ -13,6 +13,7 @@ const logoutRouter = require('./controllers/logout');
 const todosRouter = require('./controllers/todos');
 const { userExtractor } = require('./middleware/auth');
 const { MONGO_URI } = require('./config');
+const todolistRouter = require('./controllers/todolists');
 
 (async() => {
     try {
@@ -47,6 +48,7 @@ app.use('/api/login', loginRouter);
 app.use('/api/logout', logoutRouter);
 app.use('/api/resetPassword', resetPasswordRouter);
 app.use('/api/todos', userExtractor, todosRouter);
+app.use('/api/todolists', userExtractor, todolistRouter);
 
 
 module.exports = app;

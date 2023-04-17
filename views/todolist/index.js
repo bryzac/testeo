@@ -2,12 +2,54 @@ import { createNotification } from "../components/notification.js";
 
 const form = document.querySelector('#form');
 const formList = document.querySelector('#form_list');
-const list = document.querySelector('#list');
+const ul = document.querySelector('ul');
 const createBtn = document.querySelector('#create_btn');
 const input = document.querySelector('#task_input');
 const total = document.querySelector('#total');
 const completed = document.querySelector('#total_complete');
 const incompleted = document.querySelector('#total_incomplete');
+
+(async () => {
+    try {
+        const { data } = await axios.get('/api/todolists', {
+            withCredentials: true
+        });
+
+        data.forEach(todo => {
+            const newTask = document.createElement('li');
+            newTask.id = todo.id;
+            newTask.classList.add('flex', 'flex-row', 'bg-slate-600', 'px-1', 'py-1', 'rounded-md', 'border-zinc-400', 'border-2', 'gap-2', 'justify-around');
+            newTask.innerHTML = `
+                <p class="flex items-center w-9/12 bg-slate-500 px-3 rounded-md text-lg font-medium md:w-10/12">${todo.text}</p>
+                <button class="bg-green-600 rounded-lg disabled:opacity-50 hover:bg-green-500 hover:scale-110 transition ease-in-out">
+                    <img src="/images/solved.svg" class="w-6 h-6 m-1" alt="tarea completada">
+                </button>
+                <button class="bg-red-600 rounded-lg disabled:opacity-50 hover:bg-red-500 hover:scale-110 transition ease-in-out">
+                    <img src="/images/trash.svg" class="w-6 h-6 m-1" alt="eliminar tarea">
+                </button>
+                <button class="bg-yellow-600 rounded-lg disabled:opacity-50 hover:bg-yellow-500 hover:scale-110 transition ease-in-out">
+                    <img src="/images/edit.svg" class="w-6 h-6 m-1" alt="editar tarea">
+                </button>
+            `;
+            if (todo.checked) {
+                newTask.children[0].classList.add('line-through');
+                newTask.classList.add('opacity-50');
+                newTask.children[3].classList.add('invisible');
+                newTask.classList.add('done');
+            } else {
+                newTask.children[0].classList.remove('line-through');
+                newTask.classList.remove('opacity-50');
+                newTask.children[3].classList.remove('invisible');
+                newTask.classList.remove('done');
+            }
+            ul.append(newTask)
+        })
+    } catch (error) {
+        window.location.pathname = '/login'
+    }
+})();
+
+
 
 let textNotification = '';
 let isNotificationTrue = '';
@@ -56,12 +98,16 @@ input.addEventListener('input', e => {
 
 
 // Add
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async e => {
     e.preventDefault();
     if (!taskValidation) {
         validation(taskValidation, input);
         return
     };
+
+    const { data } = await axios.post('/api/todolists', { text: input.value });
+
+
     const newTask = document.createElement('li');
     newTask.classList.add('flex', 'flex-row', 'bg-slate-600', 'px-1', 'py-1', 'rounded-md', 'border-zinc-400', 'border-2', 'gap-2', 'justify-around');
     newTask.innerHTML = `
@@ -76,7 +122,7 @@ form.addEventListener('submit', e => {
             <img src="/images/edit.svg" class="w-6 h-6 m-1" alt="editar tarea">
         </button>
     `;
-    list.append(newTask);
+    ul.append(newTask);
     todoCount();
 
     textNotification = 'Tarea creada';
