@@ -35,25 +35,10 @@ todolistRouter.post('/', async (request, response) => {
 
 todolistRouter.delete('/:id', async (request, response) => { 
     const user = request.user;
-    console.log(request.params.id);
-    console.log(user.todolist[0]);
-    console.log(user.todolist[0]._id);
-    user.todolist.forEach(todo => {
-        const ja = `new ObjectId("643f7c02d0b0d3be66426043")`;
-        console.log(todo.id);
-        if (todo === ja) {
-            console.log('Si');
-        } else {
-            console.log('No');
-        }
-    });
-    // user.todolist = user.todolist.filter(todo => todo._id !== request.params.id);
-    // await user.save();
+    await Todolist.findByIdAndDelete(request.params.id);
 
-    // await Todolist.findByIdAndDelete(request.params.id);
-
-    // user.todolist = user.todolist.filter(todo => todo.id !== request.params.id);
-    // await user.save();
+    user.todos = user.todos.pull(request.params.id);
+    // user.todos = user.todos.filter(id => id.toString() !== request.params.id);
 
     return response.sendStatus(204);
 });
