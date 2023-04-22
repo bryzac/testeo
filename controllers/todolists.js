@@ -39,7 +39,7 @@ todolistRouter.delete('/:id', async (request, response) => {
 
     user.todos = user.todos.pull(request.params.id);
     // user.todos = user.todos.filter(id => id.toString() !== request.params.id);
-
+    await user.save();
     return response.sendStatus(204);
 });
 
