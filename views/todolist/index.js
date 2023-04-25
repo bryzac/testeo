@@ -38,6 +38,7 @@ const todoCount = () => {
 	completeCount();
 	incompletedCount();
 };
+todoCount();
 
 
 // Regex validation
