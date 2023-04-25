@@ -14,7 +14,7 @@ const todosRouter = require('./controllers/todos');
 const { userExtractor } = require('./middleware/auth');
 const { MONGO_URI } = require('./config');
 const todolistRouter = require('./controllers/todolists');
-const sendEmailRouter = require('./utilities/sendEmail');
+// const sendEmailRouter = require('./utilities/sendEmail');
 
 (async() => {
     try {
@@ -50,7 +50,7 @@ app.use('/api/logout', logoutRouter);
 app.use('/api/resetPassword', resetPasswordRouter);
 app.use('/api/todos', userExtractor, todosRouter);
 app.use('/api/todolists', userExtractor, todolistRouter);
-app.use('/utilities/sendEmail', sendEmailRouter);
+// app.use('/utilities/sendEmail', sendEmailRouter);
 
 
 module.exports = app;
